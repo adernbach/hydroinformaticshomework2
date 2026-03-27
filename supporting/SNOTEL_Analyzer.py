@@ -12,7 +12,7 @@ def SNOTELPlots(sitedict, gdf_in_bbox, WY, watershed, AOI, DOI,plot = True):
     #get the number of rows based on 2 columns
     num_rows = (num_plots + 1) // 2
 
-    title = f'Snow Outlook for {watershed} Basin \n {AOI} for WY {WY}'
+    title = f'Historical SNOTEL Data for {watershed} Basin \n {AOI} for WY {WY}'
 
     #set the plot up so that it has 2 columns and the number of rows based on the number of sites in the watershed
     #automatically adjust the size of the plot based on the number of rows
