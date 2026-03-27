@@ -51,6 +51,11 @@ def processSNOTEL(site, stateab, WYOI):
         wydf['M'] = pd.to_datetime(sitedf['Date']).dt.month
         wydf['D'] = pd.to_datetime(sitedf['Date']).dt.day
 
+        #Skip partial water years from calculations
+        if len(wydf) < 365:
+            print(f"Skipping {WY} - partial water year ({len(wydf)} days)")
+            continue
+
         #change NaN to 0, most NaN values are from low to 0 SWE measurements
         wydf['Snow Water Equivalent (m) Start of Day Values'] = wydf['Snow Water Equivalent (m) Start of Day Values'].fillna(0)
         wydf = wydf[cols]
