@@ -5,7 +5,7 @@ import pandas as pd
 
 
 
-def SNOTELPlots(sitedict, gdf_in_bbox, WY, watershed, AOI, DOI,plot = True):
+def SNOTELPlots(sitedict, gdf_in_bbox, WY, watershed, AOI, DOI,plot = True): #USED
     
     #get the number of plots to make based on number of sites in the watershed
     num_plots = len(sitedict)
@@ -92,9 +92,9 @@ def SNOTELPlots(sitedict, gdf_in_bbox, WY, watershed, AOI, DOI,plot = True):
     plt.tight_layout()
 
     if plot == True:
-        if not os.path.exists('Figures'):
-            os.makedirs('Figures')
-        fig.savefig(f"Figures/{watershed}_{WY}_snotelanalysis.png",  dpi = 600, bbox_inches='tight')
+        if not os.path.exists('images'):
+            os.makedirs('images')
+        fig.savefig(f"images/{watershed}_{WY}_snotelanalysis.png",  dpi = 600, bbox_inches='tight')
 
 
 
@@ -178,3 +178,25 @@ def catchmentSNOTELAnalysis(sitedict, WY, watershed, AOI, DOI,plot = True):
         if not os.path.exists('Figures'):
             os.makedirs('Figures')
         fig.savefig(f"Figures/{watershed}_{WY}_Basinsnotelanalysis.png",  dpi = 600, bbox_inches='tight')
+
+
+def swe_inches_on_date(csv_path, target_date="2025-04-01"):
+    """Return SWE (inches) for the given date from a SNOTEL CSV file."""
+    site_df = pd.read_csv(csv_path)
+    swe_m = site_df.loc[
+        site_df["Date"] == target_date,
+        "Snow Water Equivalent (m) Start of Day Values",
+    ]
+    if swe_m.empty:
+        raise ValueError(f"No SWE value found for {target_date} in {csv_path}")
+    return swe_m.iloc[0] * 39.3701
+
+
+def april_1_2025_swe(parleys_csv_path, thaynes_csv_path):
+    """Get April 1, 2025 SWE (inches) for Parleys and Thaynes files."""
+    return {
+        "Parleys": swe_inches_on_date(parleys_csv_path, target_date="2025-04-01"),
+        "Thaynes": swe_inches_on_date(thaynes_csv_path, target_date="2025-04-01"),
+    }
+
+
