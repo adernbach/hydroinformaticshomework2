@@ -3,7 +3,7 @@ import os
 
 
 
-def clean_nwis_dataframe(df):
+def clean_nwis_dataframe(df): #USED
     """
     Cleans an NWIS Daily Values (DV) DataFrame:
     - Converts index to datetime (date only)
@@ -34,7 +34,7 @@ of the min, mean, median, max SWE for each day of the water year across all othe
 of data available for that site to avoid skewing the results with an extreme water year
 like 2026
 '''
-def processSNOTEL(site, stateab, WYOI):
+def processSNOTEL(site, stateab, WYOI): #USED
     print(site)
 
     sitedf = pd.read_csv(f"files/SNOTEL/df_{site}_{stateab}_SNTL.csv")
