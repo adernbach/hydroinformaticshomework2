@@ -145,3 +145,93 @@ def compare_peak_swe_vs_streamflow_by_month(
 	plt.show()
 
 	return peak_both
+
+
+def plot_monthly_streamflow_boxplot(
+	data,
+	output_path="./images/streamflow_monthly_volume_boxplots.png",
+	show_plot=True,
+):
+	"""Plot Apr-Sep monthly streamflow volume distributions (KAF) in separate subplots."""
+	working = data.copy()
+
+	if "Date" in working.columns:
+		dates = pd.to_datetime(working["Date"])
+	elif isinstance(working.index, pd.DatetimeIndex):
+		dates = pd.to_datetime(working.index)
+	else:
+		raise ValueError("Data must include a 'Date' column or a DatetimeIndex.")
+
+	working["year"] = dates.year
+	working["month"] = dates.month
+	working = working[working["month"].between(4, 9)].copy()
+
+	# Convert daily mean flow (cfs) to daily volume (acre-ft), then sum by year-month.
+	working["daily_volume_acre_ft"] = working["flow_cfs"] * 86400.0 / 43560.0
+	monthly_volume = (
+		working.groupby(["year", "month"], as_index=False)["daily_volume_acre_ft"]
+		.sum()
+		.rename(columns={"daily_volume_acre_ft": "monthly_volume_acre_ft"})
+	)
+	monthly_volume["monthly_volume_kaf"] = monthly_volume["monthly_volume_acre_ft"] / 1000.0
+
+	month_names = {
+		4: "April",
+		5: "May",
+		6: "June",
+		7: "July",
+		8: "August",
+		9: "September",
+	}
+
+	fig, axes = plt.subplots(2, 3, figsize=(8, 5), sharey=True)
+	axes = axes.flatten()
+
+	for i, month in enumerate(range(4, 10)):
+		ax = axes[i]
+		month_vals = monthly_volume.loc[
+			monthly_volume["month"] == month,
+			"monthly_volume_kaf",
+		].dropna()
+
+		if len(month_vals) > 0:
+			ax.boxplot(
+				month_vals.values,
+				widths=0.45,
+				patch_artist=True,
+				boxprops=dict(facecolor="blue", color="navy", alpha=1.0),
+				whiskerprops=dict(color="navy"),
+				capprops=dict(color="navy"),
+				medianprops=dict(color="white", linewidth=1.5),
+				flierprops=dict(
+					marker="o",
+					markerfacecolor="blue",
+					markeredgecolor="navy",
+					markersize=4,
+					alpha=0.6,
+				),
+			)
+		else:
+			ax.text(0.5, 0.5, "No data", ha="center", va="center", transform=ax.transAxes)
+
+		ax.set_title(month_names[month])
+		ax.set_xticks([])
+		ax.set_xlim(0.75, 1.25)
+		ax.grid(False)
+		if i % 3 == 0:
+			ax.set_ylabel("Monthly Volume (KAF)")
+
+	fig.suptitle("Monthly Historical Streamflow Volume by Month (April-September, KAF)", y=0.98)
+	fig.subplots_adjust(left=0.07, right=0.98, top=0.90, bottom=0.08, wspace=0.14, hspace=0.22)
+
+	if output_path:
+		output = Path(output_path)
+		output.parent.mkdir(parents=True, exist_ok=True)
+		fig.savefig(output, dpi=300, bbox_inches="tight")
+
+	if show_plot:
+		plt.show()
+	else:
+		plt.close(fig)
+
+	return fig, axes
