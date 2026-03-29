@@ -39,7 +39,7 @@ def compare_peak_swe_vs_streamflow_by_month(
 	snotel_dir="files/SNOTEL",
 	output_path="images/peak_swe_vs_streamflow_by_month_dualsite.png",
 ):
-	"""Create Apr-Sep parity plots of peak SWE vs monthly mean streamflow for two SNOTEL sites."""
+	"""Create Apr-Sep parity plots of peak SWE vs monthly mean streamflow (cfs) for two SNOTEL sites."""
 	if site_code_map is None:
 		site_code_map = {"PARLEYS": "684_UT_SNTL", "THAYNES": "814_UT_SNTL"}
 
@@ -136,7 +136,7 @@ def compare_peak_swe_vs_streamflow_by_month(
 	]
 	fig.legend(handles=legend_handles, loc="upper center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 1.02))
 
-	fig.suptitle("Peak SWE vs Streamflow by Summer Month (PARLEYS and THAYNES Separate)", fontsize=13, y=1.06)
+	fig.suptitle("Peak SWE vs Monthly Mean Streamflow by Summer Month (PARLEYS and THAYNES)", fontsize=13, y=1.06)
 	fig.tight_layout()
 
 	output = Path(output_path)
